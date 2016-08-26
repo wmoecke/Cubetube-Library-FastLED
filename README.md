@@ -3,7 +3,16 @@ Cubetube-Library-FastLED: An implementation of the beta-cube-library using FastL
 API Summary:
 
 struct Color: An RGB color.
+  Properties: uint8_t red, green, blue.
+  Initializers:  
+    Color(uint8_t r, uint8_t g, uint8_t b),
+    Color().
+
 struct Point: A point in 3D space.
+  Properties: float x, y, z.
+  Initializers:  
+    Point(),
+    Point(float _x, float _y, float _z).
 
 class Cube: An L3D LED cube. Provides methods for drawing in 3D. Controls the LED hardware.
     Public Properties:
