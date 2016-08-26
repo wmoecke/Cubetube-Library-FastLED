@@ -56,8 +56,7 @@ class Cube
   private:
     bool onlinePressed;
     bool lastOnline;
-	CRGB leds[PIXEL_COUNT];
-    //Adafruit_NeoPixel strip;
+    CRGB leds[PIXEL_COUNT];
     UDP udp;
     int lastUpdated;
     char localIP[24];
