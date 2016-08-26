@@ -426,11 +426,17 @@ void Cube::show()
 	LEDS.show();	//strip.show();
 }
 
+/** Sets the brightness of the LED strips to a given value.
+  @param value Brightness value to be set (0 - 255).
+
+  */
 void Cube::setBrightness(int value)
 {
   LEDS.setBrightness(constrain(value, 1, this->maxBrightness));	
 }
 
+/** Gets the brightness of the LED strips.
+*/
 int Cube::getBrightness(void)
 {
   return LEDS.getBrightness();
@@ -496,6 +502,7 @@ void Cube::onlineOfflineSwitch() {
 
 }
 
+/** Causes the Cube to connect the internal WiFi module. */
 void Cube::joinWifi()
 {
     WiFi.listen();
