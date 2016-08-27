@@ -33,9 +33,9 @@ void Cube::begin(void)
 {
   center=Point((this->size-1)/2,(this->size-1)/2,(this->size-1)/2);
   LEDS.addLeds<PIXEL_TYPE,PIXEL_PIN,COLOR_ORDER>(this->leds,PIXEL_COUNT);
+  
   //initialize Particle variables
   int (Cube::*setPort)(String) = &Cube::setPort;
-  
   Particle.variable("IPAddress", this->localIP);
   Particle.variable("MACAddress", this->macAddress);
   Particle.variable("port", &this->port);
@@ -78,7 +78,7 @@ void Cube::setVoxel(int index, Color col)
   */
 void Cube::setVoxel(Point p, Color col)
 {
-  setVoxel(p.x, p.y, p.z, col);
+  this->setVoxel(p.x, p.y, p.z, col);
 }
 
 /** Get the color of a voxel at a position.
@@ -108,7 +108,7 @@ Color Cube::getVoxel(int x, int y, int z)
   */
 Color Cube::getVoxel(Point p)
 {
-  return getVoxel(p.x, p.y, p.z);
+  return this->getVoxel(p.x, p.y, p.z);
 }
 
 /** Draw a line in 3D space.
@@ -212,7 +212,7 @@ void Cube::line(int x1, int y1, int z1, int x2, int y2, int z2, Color col)
   */
 void Cube::line(Point p1, Point p2, Color col)
 {
-  line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col);
+  this->line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, col);
 }
 
 /** Draw a filled sphere.
@@ -227,7 +227,7 @@ void Cube::sphere(int x, int y, int z, int r, Color col)
     for(int dy = -r; dy <= r; dy++)
       for(int dz = -r; dz <= r; dz++)
         if(sqrt(dx*dx + dy*dy + dz*dz) <= r)
-          setVoxel(x + dx, y + dy, z + dz, col);
+          this->setVoxel(x + dx, y + dy, z + dz, col);
 }
 
 /** Draw a filled sphere.
@@ -238,7 +238,7 @@ void Cube::sphere(int x, int y, int z, int r, Color col)
   */
 void Cube::sphere(Point p, int r, Color col)
 {
-  sphere(p.x, p.y, p.z, r, col);
+  this->sphere(p.x, p.y, p.z, r, col);
 }
 
 /** Draw a shell (empty sphere).
@@ -256,7 +256,7 @@ void Cube::shell(float x, float y,float z, float r, Color col)
     for(int j=0;j<size;j++)
       for(int k=0;k<size;k++)
 		if(abs(sqrt(pow(i-x,2)+pow(j-y,2)+pow(k-z,2))-r)<thickness)
-		  setVoxel(i,j,k,col);
+		  this->setVoxel(i,j,k,col);
 }
 
 /** Draw a shell (empty sphere).
@@ -274,7 +274,7 @@ void Cube::shell(float x, float y,float z, float r, float thickness, Color col)
     for(int j=0;j<size;j++)
       for(int k=0;k<size;k++) 
 		if(abs(sqrt(pow(i-x,2)+pow(j-y,2)+pow(k-z,2))-r)<thickness)
-		  setVoxel(i,j,k,col);
+		  this->setVoxel(i,j,k,col);
 }
 
 /** Draw a shell (empty sphere).
@@ -285,7 +285,7 @@ void Cube::shell(float x, float y,float z, float r, float thickness, Color col)
 */
 void Cube::shell(Point p, float r, Color col)
 {
-  shell(p.x, p.y, p.z, r, col);
+  this->shell(p.x, p.y, p.z, r, col);
 }
 
 /** Draw a shell (empty sphere).
@@ -297,7 +297,7 @@ void Cube::shell(Point p, float r, Color col)
 */
 void Cube::shell(Point p, float r, float thickness, Color col)
 {
-  shell(p.x, p.y, p.z, r, thickness, col);
+  this->shell(p.x, p.y, p.z, r, thickness, col);
 }
 
 /** Set the entire cube to one color.
@@ -311,7 +311,7 @@ void Cube::background(Color col)
   for(int x = 0; x < this->size; x++)
     for(int y = 0; y < this->size; y++)
       for(int z = 0; z < this->size; z++)
-        setVoxel(x, y, z, col);
+        this->setVoxel(x, y, z, col);
 }
 
 /** Fade the entire cube to black.
@@ -332,8 +332,9 @@ void Cube::fade(float coeff)
 					 voxelColor.green-=voxelColor.green*coeff;
 				if(voxelColor.blue>0)
 					voxelColor.blue-=voxelColor.blue*coeff;
-				setVoxel(x,y,z, voxelColor);    
+				this->setVoxel(x,y,z, voxelColor);    
 			}
+	this->show();
 }
 
 /** Clear the entire cube.
@@ -342,7 +343,7 @@ void Cube::clear()
 {
   //LEDS.clear(true);
   //Using for() loop to iteract through the leds[] array is faster than using the FastLED implementation
-  background(Black);
+  this->background(Black);
 }
 
 /** Map a value into a color.
@@ -386,17 +387,17 @@ Color Cube::colorMap(float val, float min, float max)
   colors[5].blue = this->maxBrightness;
 
   if(val <= range/6)
-    return lerpColor(colors[0], colors[1], val, 0, range/6);
+    return this->lerpColor(colors[0], colors[1], val, 0, range/6);
   else if(val <= 2 * range / 6)
-    return(lerpColor(colors[1], colors[2], val, range / 6, 2 * range / 6));
+    return(this->lerpColor(colors[1], colors[2], val, range / 6, 2 * range / 6));
   else if(val <= 3 * range / 6)
-    return(lerpColor(colors[2], colors[3], val, 2 * range / 6, 3*range / 6));
+    return(this->lerpColor(colors[2], colors[3], val, 2 * range / 6, 3*range / 6));
   else if(val <= 4 * range / 6)
-    return(lerpColor(colors[3], colors[4], val, 3 * range / 6, 4*range / 6));
+    return(this->lerpColor(colors[3], colors[4], val, 3 * range / 6, 4*range / 6));
   else if(val <= 5 * range / 6)
-    return(lerpColor(colors[4], colors[5], val, 4 * range / 6, 5*range / 6));
+    return(this->lerpColor(colors[4], colors[5], val, 4 * range / 6, 5*range / 6));
   else
-    return(lerpColor(colors[5], colors[0], val, 5 * range / 6, range));
+    return(this->lerpColor(colors[5], colors[0], val, 5 * range / 6, range));
 }
 
 /** Linear interpolation between colors.
@@ -432,14 +433,14 @@ void Cube::show()
   */
 void Cube::setBrightness(int value)
 {
-  LEDS.setBrightness(constrain(value, 1, this->maxBrightness));	
+	LEDS.setBrightness(constrain(value, 1, this->maxBrightness));	
 }
 
 /** Gets the brightness of the LED strips.
 */
 int Cube::getBrightness(void)
 {
-  return LEDS.getBrightness();
+	return LEDS.getBrightness();
 }
 
 /** Updates the variables related to the accelerometer
@@ -449,11 +450,11 @@ calculates theta and phi, which are the 3D rotation angles
  */
 void Cube::updateAccelerometer()
 {
-  accelerometerX=analogRead(X)-2048;
-  accelerometerY=analogRead(Y)-2048;
-  accelerometerZ=analogRead(Z)-2048;
-  theta=atan(accelerometerX/sqrt(pow(accelerometerY,2)+pow(accelerometerZ,2)))*180/3.14;
-  phi=atan(accelerometerY/sqrt(pow(accelerometerX,2)+pow(accelerometerZ,2)))*180/3.14;
+	accelerometerX=analogRead(X)-2048;
+	accelerometerY=analogRead(Y)-2048;
+	accelerometerZ=analogRead(Z)-2048;
+	theta=atan(accelerometerX/sqrt(pow(accelerometerY,2)+pow(accelerometerZ,2)))*180/3.14;
+	phi=atan(accelerometerY/sqrt(pow(accelerometerX,2)+pow(accelerometerZ,2)))*180/3.14;
 }
 
 /** Initialize online/offline switch and the join wifi button */
@@ -530,22 +531,21 @@ void Cube::listen() {
         for(int z = 0; z < this->size; z++) {
           int index = z*this->size + y*this->size + x;
           Color pixelColor = Color((data[index]&0xE0)>>2, (data[index]&0x1C)<<1, (data[index]&0x03)<<4);   //colors with max brightness set to 64
-          setVoxel(x, y, z, pixelColor);
+          this->setVoxel(x, y, z, pixelColor);
         }
       }
     }
   }
-
   this->show();
 }
 
 /** Update the cube's knowledge of its own network address. */
 void Cube::updateNetworkInfo() {
-  IPAddress myIp = WiFi.localIP();
-  sprintf(this->localIP, "%d.%d.%d.%d", myIp[0], myIp[1], myIp[2], myIp[3]);
-  byte macAddr[6];
-  WiFi.macAddress(macAddr);
-  sprintf(this->macAddress, "%02x:%02x:%02x:%02x:%02x:%02x",macAddr[5],macAddr[4],macAddr[3],macAddr[2],macAddr[1],macAddr[0]);
+	IPAddress myIp = WiFi.localIP();
+	sprintf(this->localIP, "%d.%d.%d.%d", myIp[0], myIp[1], myIp[2], myIp[3]);
+	byte macAddr[6];
+	WiFi.macAddress(macAddr);
+	sprintf(this->macAddress, "%02x:%02x:%02x:%02x:%02x:%02x",macAddr[5],macAddr[4],macAddr[3],macAddr[2],macAddr[1],macAddr[0]);
 }
 
 /** Function to be called via Particle API for updating the streaming port number.
@@ -554,7 +554,7 @@ void Cube::updateNetworkInfo() {
     @param _port A decimal number in a String, corresponding to the desired port number.
 */
 int Cube::setPort(String _port) {
-  this->port = _port.toInt();
-  this->udp.begin(port);
-  return port;
+	this->port = _port.toInt();
+	this->udp.begin(port);
+	return port;
 }
