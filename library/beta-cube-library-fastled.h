@@ -30,8 +30,7 @@ FASTLED_USING_NAMESPACE;
 #endif
 
 /**   An RGB color. */
-struct Color
-{
+struct Color {
   uint8_t red, green, blue;
 
   Color(uint8_t r, uint8_t g, uint8_t b) : red(r), green(g), blue(b) {}
@@ -39,8 +38,7 @@ struct Color
 };
 
 /**   A point in 3D space.  */
-struct Point
-{
+struct Point {
   float x;
   float y;
   float z;
@@ -48,11 +46,40 @@ struct Point
   Point(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
 };
 
+/** Overloaded != operator. */
+inline bool operator!= (const Color& a, const Color& b) {
+    if(a.red != b.red) return true;
+    if(a.green != b.green) return true;
+    if(a.blue != b.blue) return true;
+    return false;
+}
+
+inline bool operator!= (const Point& a, const Point& b) {
+    if(a.x != b.x) return true;
+    if(a.y != b.y) return true;
+    if(a.z != b.z) return true;
+    return false;
+}
+
+/** Overloaded == operator. */
+inline bool operator== (const Color& a, const Color& b) {
+    if(a.red != b.red) return false;
+    if(a.green != b.green) return false;
+    if(a.blue != b.blue) return false;
+    return true;
+}
+
+inline bool operator== (const Point& a, const Point& b) {
+    if(a.x != b.x) return false;
+    if(a.y != b.y) return false;
+    if(a.z != b.z) return false;
+    return true;
+}
+
 /**   An L3D LED cube.
       Provides methods for drawing in 3D. Controls the LED hardware.
 */
-class Cube
-{
+class Cube {
   private:
     bool onlinePressed;
     bool lastOnline;
@@ -79,6 +106,7 @@ class Cube
     Color getVoxel(int x, int y, int z);
 	Color getVoxel(int index);
     Color getVoxel(Point p);
+	Color Wheel(byte wheelPos, float opacity=1.0);
 	int getBrightness(void);
     void line(int x1, int y1, int z1, int x2, int y2, int z2, Color col);
     void line(Point p1, Point p2, Color col);
@@ -90,8 +118,9 @@ class Cube
     void shell(Point p, float r, float thickness, Color col);
 	void updateAccelerometer();
     void background(Color col);
-	void fade(float coeff=0.0625f);
 	void clear();
+	void fadeall();
+	void fade(float coeff=0.0625f, bool show=true);
 
     Color colorMap(float val, float min, float max);
     Color lerpColor(Color a, Color b, int val, int min, int max);

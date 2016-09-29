@@ -27,7 +27,6 @@ Cube::Cube() : \
     size(8)
 { }
 
-
 /** Initialization of cube resources and environment. */
 void Cube::begin(void) 
 {
@@ -312,13 +311,14 @@ void Cube::background(Color col)
     for(int y = 0; y < this->size; y++)
       for(int z = 0; z < this->size; z++)
         this->setVoxel(x, y, z, col);
+  this->show();
 }
 
 /** Fade the entire cube to black.
 
   @param coeff The coefficient to dim all LEDs in the cube each time (defaults to 0.0625f).
 */
-void Cube::fade(float coeff)
+void Cube::fade(float coeff, bool show)
 {
     Color voxelColor;
 	for(int x = 0; x < this->size;x++)
@@ -334,8 +334,10 @@ void Cube::fade(float coeff)
 					voxelColor.blue-=voxelColor.blue*coeff;
 				this->setVoxel(x,y,z, voxelColor);    
 			}
-	this->show();
+	if(show) this->show();
 }
+
+void Cube::fadeall() { for(int i = 0; i < PIXEL_COUNT; i++) { this->leds[i].nscale8(250); } }
 
 /** Clear the entire cube.
 */
@@ -346,14 +348,37 @@ void Cube::clear()
   this->background(Black);
 }
 
+/** Input a value 0 to 255 to get a color value.
+	The colours are a transition r - g - b - back to r.
+
+	@param wheelPos Value to map into a color.
+	@param opacity How dim or bright the output color should be
+	(e.g.: 0=no color, 0.5=half brightness, 1=full brightness).
+
+	@return Color from value.
+*/
+Color Cube::Wheel(byte wheelPos, float opacity) {
+	if(wheelPos < 85) {
+		return Color((wheelPos * 3) * opacity, (255 - wheelPos * 3) * opacity, 0);
+	}
+	else if(wheelPos < 170) {
+		wheelPos -= 85;
+		return Color((255 - wheelPos * 3) * opacity, 0, (wheelPos * 3) * opacity);
+	}
+	else {
+		wheelPos -= 170;
+		return Color(0, (wheelPos * 3) * opacity, (255 - wheelPos * 3) * opacity);
+    }
+}
+
 /** Map a value into a color.
-  The set of colors fades from blue to green to red and back again.
+	The set of colors fades from blue to green to red and back again.
 
-  @param val Value to map into a color.
-  @param min Minimum value that val will take.
-  @param max Maximum value that val will take.
+	@param val Value to map into a color.
+	@param min Minimum value that val will take.
+	@param max Maximum value that val will take.
 
-  @return Color from value.
+	@return Color from value.
 */
 Color Cube::colorMap(float val, float min, float max)
 {
@@ -425,6 +450,7 @@ Color Cube::lerpColor(Color a, Color b, int val, int min, int max)
 void Cube::show()
 {
 	LEDS.show();	//strip.show();
+	Particle.process();
 }
 
 /** Sets the brightness of the LED strips to a given value.
